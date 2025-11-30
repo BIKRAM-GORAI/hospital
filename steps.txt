@@ -1,0 +1,14 @@
+first run npm init -y
+
+then make the folder structure
+
+then make db.js under config folder for database connection
+
+install the necessary packages
+
+change type:module in package.json
+
+make a script in package
+
+
+whitelisted the ip in mongodb
