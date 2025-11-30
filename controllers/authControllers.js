@@ -71,7 +71,51 @@ export const register=async(req,res)=>{
 //^                   BEGINNING OF LOGIN CONTROLLER
 
 
+export const login=async(req,res)=>{{
+    try{
+        const{email,password}=req.body;
 
+        //basic validation
+        if(!email || !password){
+            return res.status(400).json({message:"Email and password are required"});
+        }
+
+        //!    check if user exists
+
+        const user=await User.findOne({email});  //!   finding user by email
+
+        if(!user){
+            return res.status(400).json({message:"Invalid email or password"});
+        }
+
+        if (user.password!==password){
+            return res.status(400).json({message:"Invalid email or password"});
+        }
+
+        //* if login successful then
+
+        return res.status(200).json({
+            user:{
+                id:user._id,
+                name:user.name,
+                email:user.email,
+                role:user.role,
+                phone:user.phone,
+                address:user.address,
+            }
+        });
+
+    }catch(err){
+        console.error("Error in login controller:",err);
+        return res.status(500).json({message:"Server error"});
+    }
+}};
+
+
+
+//!                   LOGIN CONTROLLER COMPLETED
+
+        
 
 
 
