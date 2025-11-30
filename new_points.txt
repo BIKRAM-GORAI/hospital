@@ -1,0 +1,130 @@
+📌 Most Common HTTP Status Code Categories
+Status Code	Meaning
+2xx	Success
+3xx	Redirects / Resource moved
+4xx	Client-side error (user mistake)
+5xx	Server-side error (your backend code issue)
+💬 Now, let’s break down the most common codes:
+✅ 200 – OK
+
+Everything worked fine.
+
+Used for:
+
+Successful login
+
+Fetching data
+
+Successful update
+
+res.status(200).json({ message: "Login successful" });
+
+🎉 201 – Created
+
+Used when something was successfully created.
+
+Example:
+
+new user created
+
+new student added
+
+new attendance record created
+
+res.status(201).json({ message: "User registered" });
+
+
+So 201 = “New resource created successfully”.
+
+⚠️ 400 – Bad Request
+
+Means client made a mistake.
+
+Examples:
+
+Missing fields
+
+Invalid email format
+
+Weak password
+
+res.status(400).json({ message: "Email is required" });
+
+🚫 401 – Unauthorized
+
+User is not logged in OR token is missing/wrong.
+
+Example:
+
+res.status(401).json({ message: "Invalid token" });
+
+⛔ 403 – Forbidden
+
+User is logged in but not allowed to access something.
+
+Example:
+A student tries to access admin dashboard.
+
+res.status(403).json({ message: "Access denied" });
+
+❓ 404 – Not Found
+
+The resource does not exist.
+
+Examples:
+
+Wrong URL
+
+User ID not found
+
+res.status(404).json({ message: "User not found" });
+
+💥 500 – Server Error
+
+Something is wrong in your backend code.
+
+Examples:
+
+MongoDB crashed
+
+Code has a bug
+
+Logic error thrown
+
+res.status(500).json({ message: "Server error" });
+
+🔥 Why do we use these status codes?
+
+Because the frontend needs to understand what happened.
+
+For example:
+
+Login:
+
+200 → Correct password → login
+
+400 → Wrong password → show error message
+
+Register:
+
+201 → Account created → redirect to login
+
+409 → Email already exists → show error
+
+Delete:
+
+200 → Successfully deleted
+
+404 → Not found
+
+500 → Internal backend error
+
+🚀 Very Simple Summary
+Status	Meaning
+200	Request OK
+201	Created successfully
+400	Bad request from user
+401	Not logged in
+403	No permission
+404	Not found
+500	Server crashed
