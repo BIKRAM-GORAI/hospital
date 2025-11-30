@@ -17,10 +17,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "public")));
 
-// Test API route
+
+//!                  MAIN CONTENT HERE
+// // Test API route
 app.get("/api/ping", (req, res) => {
   res.json({ message: "Server working!", time: new Date().toISOString() });
 });
+
+
+
+//*  now we will import the routes
+
+
+import authRoutes from "./routes/authRoutes.js";
+app.use("/api/auth",authRoutes);
+
+
 
 // Connect to DB then start server
 connectDB(process.env.MONGO_URI);

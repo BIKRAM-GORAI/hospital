@@ -1,17 +1,20 @@
+<!--*                              HOME PAGE     -->        
+
+
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hospital Management System</title>
+</head>
+
 <body>
-  <h1>Hospital Project</h1>
-  <button onclick="testAPI()">Ping Server</button>
+  <div class="container">
+    <h1>HOSPITAL MANAGEMENT</h1>
 
-  <pre id="output"></pre>
-
-  <script>
-    async function testAPI() {
-      const res = await fetch("/api/ping");
-      const data = await res.json();
-      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
-    }
-  </script>
+    <button onclick="window.location.href = `login.html`">Login</button>
+    <button onclick="window.loaction.href = `register.html`">Register</button>
+  </div>
 </body>
-</html>
