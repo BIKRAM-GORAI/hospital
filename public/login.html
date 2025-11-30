@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -74,8 +74,17 @@
             //converts js objects to json text
 
         })
-        const data=await response.json(); // this is the response from the server in json format
-        //it converts json text to js objects
+
+        let data;
+        try{
+            data=await response.json();// this is the response from the server in json format
+            //it converts json text to js objects
+        }
+        catch(err){
+            feedback.textContent="Server error. Please try again later.";
+            return;
+        }
+        
 
         if(!response.ok){
             feedback.textContent=data.message || "An error occurred during login";
@@ -98,7 +107,7 @@
 
         
         //IF EVERYTHING IS OK WE WILL STORE THE USER DATA IN LOCAL STORAGE
-        localStorage.setItem("login_details",JSON.stringify(data.user));
+        localStorage.setItem("hm_user",JSON.stringify(data.user));  //hm_user="hospital management user"
 
         //login_details is the key where we are storing the user data
         //data.user is the user data we are getting from the backend
