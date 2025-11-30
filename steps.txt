@@ -12,3 +12,17 @@ make a script in package
 
 
 whitelisted the ip in mongodb
+
+
+made the database schemas in models ->User.js  
+
+
+made the login and register controller in authcontroller 
+
+then made the authroutes in routes to handle the cntroller
+
+then put the routes access in server.js
+
+then made index.html
+then login.html
+then register.html
