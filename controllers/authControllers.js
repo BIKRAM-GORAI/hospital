@@ -89,7 +89,7 @@ export const login=async(req,res)=>{{
         }
 
         if (user.password!==password){
-            return res.status(400).json({message:"Invalid email or password"});
+            return res.status(400).json({message:"Invalid password"});
         }
 
         //* if login successful then

@@ -19,10 +19,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 //!                  MAIN CONTENT HERE
-// // Test API route
-app.get("/api/ping", (req, res) => {
-  res.json({ message: "Server working!", time: new Date().toISOString() });
-});
+
 
 
 
