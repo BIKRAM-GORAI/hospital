@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency files
+package-lock.json
+
+# IDE files (optional but recommended)
+.vscode/
+.DS_Store
+
+# Build output (if you ever add frontend build)
+# dist/
+# build/
+
+# System files (Windows)
+#Thumbs.db
+
+# Temporary files
+*.temp

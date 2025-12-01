@@ -1,0 +1,216 @@
+<!--addDoctor.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Doctor Addition</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <h2>Add a New Doctor</h2>
+
+      <div class="form-box">
+        <form id="addDoctorForm">
+          <label for="d_name">Full Name</label>
+          <input
+            id="d_name"
+            type="text"
+            placeholder="Enter Full name"
+            required
+          />
+
+          <label for="d_dept">Specialisation</label>
+          <input
+            id="d_dept"
+            type="text"
+            placeholder="Enter Specialisation or Department"
+            required
+          />
+
+          <label for="d_exp">Experience</label>
+          <input
+            id="d_exp"
+            type="number"
+            placeholder="Enter Experience"
+            required
+          />
+
+          <label for="d_email">Email</label>
+          <input
+            id="d_email"
+            type="email"
+            placeholder="Enter Email "
+            required
+          />
+
+          <label for="d_phone">Phone number</label>
+          <input
+            id="d_phone"
+            type="tel"     
+            placeholder="Enter Phone Number"
+            pattern="[0-9]"
+            required
+            /> 
+              <!-- ! phone number should be of type tel because we can use trim functions on it,but using it on number type gives error  -->
+
+          <button type="button" onclick="create()">Create</button> 
+
+          <!-- !we need to write type="button" because by default button is of type submit and it will try to submit the form and refresh the page -->
+
+        </form>
+        <p id="feedback"></p>
+        <!-- For server response -->
+      </div>
+    </div>
+
+    <script>
+      async function create() {         // all these will be executed when we click on create button
+        const name = document.getElementById("d_name").value.trim();
+        const dept = document.getElementById("d_dept").value.trim();
+
+
+        const exp = Number(document.getElementById("d_exp").value);
+        //VERY IMPORTATNT
+        // we are using Number() because the value taken from input field is always of string type
+        // so if we do not convert it into number then even if user enters a number it will be treated as string  
+
+        //also when using Number if some characters is here in the string then it will convert it to NaN
+
+
+        const email = document.getElementById("d_email").value.trim();
+        const phone = document.getElementById("d_phone").value.trim();
+        const feedback = document.getElementById("feedback");
+
+        // Simple validation
+        if (!name || !dept || Number.isNaN(exp) || !email || !phone)   //Number.isNaN(exp) is used to check if exp is NaN or not
+        {
+          feedback.textContent = "Please fill all the fields";
+          return;
+        }
+        try {
+            const response = await fetch("/api/admin/doctors", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name, department:dept, experience:exp, email, phone }),
+            });
+          
+
+            let data;
+            try {
+              data = await response.json();
+            } catch (error) {
+              feedback.textContent = "Invalid server response";
+              return;
+            }
+
+            if (!response.ok) {
+              feedback.textContent = data.message || "An error occurred";
+              return;
+            }
+
+          setTimeout(() => {
+            feedback.textContent =
+              "Doctor added successfully! Redirecting to dashboard...";
+            window.location.href = "/adminDashboard.html";
+          }, 2000);
+        }
+        catch (error) {
+          feedback.textContent = "Network error. Please try again later.";
+        }
+      }
+    </script>
+</body>
+</html>
+
+
+<!-- !                       HOW TO WRITE THE BACKEND LOGIC FOR SENDING AND RECEIVING DATA -
+ ->first make a create function under which you will write the logic for adding doctor to the database
+ ->then we will store all the values using const {name,department,experience,email,phone}
+ ->when it is for taking information or showing information
+ ->then we will check whether any of of the fiels is empty or not using if(!name || !department || !experience || !email || !phone)
+ ->if any field is empty we will return res.status(400).json({message:"Please fill all the fields"})
+
+ ->after that we will check whether the doctor with the same email already exists or not using const  [we have not implemented it yet]
+
+ -> then we will use try block and try to call the backend 
+ ->then we will send the data to the backend  after converting it to json
+ ->then we will wait for the response
+ ->response it important for checking whether the data is stored or not\
+ ->then we will check whether there is any error in storing or not
+ ->if no error is there we will show the admin that the doctor is stored successfully
+ -> we will display a successfull message and then after 2 seceond we will redirect him to the admin dashboard again
+ ->and then we will close the create function and also include a fallback in case of any error -->
+
+
+
+
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 40px;
+        background: #f8f8f8;
+      }
+
+      .main {
+        width: 600px;
+        text-align: center;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 30px;
+        background: white;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        font-size: 32px;
+        font-weight: bold;
+      }
+
+      .form-box {
+        width: 100%;
+        padding: 20px 0;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      input {
+        padding: 12px;
+        border-radius: 10px;
+        border: 2px solid #ccc;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        font-size: 18px;
+        font-weight: bold;
+        background: black;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #444;
+      }
+    </style>

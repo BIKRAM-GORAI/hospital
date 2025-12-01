@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient History</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e2dddd;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 40px auto;
+            border: 2px solid #d9d9d9;
+            padding: 25px;
+            border-radius: 6px;
+        }
+
+        .back-btn {
+            float: right;
+            padding: 8px 20px;
+            border: 1px solid #76c7ff;
+            background: #d8f1ff;
+            color: #0077cc;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        h2 {
+            margin-top: 10px;
+            font-size: 28px;
+        }
+
+        .details p {
+            margin: 4px 0;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 1px solid #333;
+            padding: 10px;
+            font-size: 15px;
+            text-align: left;
+        }
+
+        table th {
+            background: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <button class="back-btn">back</button>
+
+    <h2>Patient History</h2>
+
+    <div class="details">
+        <p><strong>Patient Name:</strong> Mr. abcde</p>
+        <p><strong>Doctor's Name:</strong> Dr. pqrst</p>
+        <p><strong>Department:</strong> Cardiology</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Visit No.</th>
+                <th>Visit Type</th>
+                <th>Tests Done</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+                <th>Medicines</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>1.</td>
+                <td>In-person</td>
+                <td>ECG</td>
+                <td>Abnormal<br>Heartbeats</td>
+                <td>exercise daily</td>
+                <td>Medicine 1</td>
+            </tr>
+
+            <tr>
+                <td>2.</td>
+                <td>In-person</td>
+                <td>ECG</td>
+                <td>Abnormal<br>Heartbeats</td>
+                <td>exercise daily</td>
+                <td>Medicine 2</td>
+            </tr>
+
+            <tr>
+                <td>3.</td>
+                <td>In-person</td>
+                <td>ECG</td>
+                <td>normal<br>Heartbeats</td>
+                <td>cont. exercise</td>
+                <td>Medicine 3</td>
+            </tr>
+
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>
