@@ -9,3 +9,6 @@ A Complete Hospital Management System
 - Frontend
 - Backend
 - Database
+
+
+#  The strength of the team is each individual member. The strength of each member is the team.
