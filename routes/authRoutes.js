@@ -5,7 +5,7 @@
 
 import express from "express";
 import{register,login} from "../controllers/authControllers.js";
-
+// import hrithik from "../controllers/authControllers.js";
 const router=express.Router();
 //&  CREATING ROUTER OBJECT FROM EXPRESS  */
 

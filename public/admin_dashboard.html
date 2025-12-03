@@ -21,7 +21,8 @@
     <div class="grid">
       <!-- Left column: lists -->
       <div class="col">
-        <section class="card">
+        <section class="card">            
+           <!-- why only section? because it is a part of a document and it is used to group related content -->
           <h2 class="card-title">Registered Doctors</h2>
           <div id="doctorsList" class="list">
             <!-- doctor rows inserted here -->
@@ -93,27 +94,61 @@
   ];
 
   // ---------- render lists ----------
+  // function renderDoctors(list) {
+  //   const node = document.getElementById("doctorsList");
+  //   node.innerHTML = "";
+  //   list.forEach(d => {
+  //     const row = document.createElement("div");
+  //     row.className = "rowItem";
+  //     row.innerHTML = `
+  //       <div class="rowLeft">
+  //         <div class="name">${escape(d.name)}</div>
+  //         <div class="meta">${escape(d.department)} • ${escape(d.phone)}</div>
+  //       </div>
+  //       <div class="rowActions">
+  //         <button class="yellow editBtn" data-id="${d._id}">edit</button>
+  //         <button class="red deleteBtn" data-id="${d._id}">delete</button>
+  //         <button class="gray">blacklist</button>
+  //       </div>
+  //     `;
+  //     node.appendChild(row);
+  //   });
+  //   attachDoctorHandlers();
+  //}
   function renderDoctors(list) {
-    const node = document.getElementById("doctorsList");
-    node.innerHTML = "";
-    list.forEach(d => {
-      const row = document.createElement("div");
-      row.className = "rowItem";
-      row.innerHTML = `
-        <div class="rowLeft">
-          <div class="name">${escape(d.name)}</div>
-          <div class="meta">${escape(d.department)} • ${escape(d.phone)}</div>
-        </div>
-        <div class="rowActions">
-          <button class="yellow editBtn" data-id="${d._id}">edit</button>
-          <button class="red deleteBtn" data-id="${d._id}">delete</button>
-          <button class="gray">blacklist</button>
-        </div>
-      `;
-      node.appendChild(row);
-    });
-    attachDoctorHandlers();
-  }
+  const doctorsList = document.getElementById("doctorsList");
+
+  // Clear old data
+  doctorsList.innerHTML = "";
+
+  // Loop through each doctor
+  list.forEach(function (doctor) {
+
+    // Create a new div for each doctor row
+    const row = document.createElement("div");
+    row.className = "rowItem";
+
+    // Add HTML inside the row
+    row.innerHTML =
+      '<div class="rowLeft">' +
+        '<div class="name">' + doctor.name + '</div>' +
+        '<div class="meta">' + doctor.department + ' • ' + doctor.phone + '</div>' +
+      '</div>' +
+
+      '<div class="rowActions">' +
+        '<button class="yellow editBtn" data-id="' + doctor._id + '">edit</button>' +
+        '<button class="red deleteBtn" data-id="' + doctor._id + '">delete</button>' +
+        '<button class="gray">blacklist</button>' +
+      '</div>';
+
+    // Add the row to the page
+    doctorsList.appendChild(row);
+  });
+
+  // Attach event listeners to buttons
+  attachDoctorHandlers();
+}
+
 
   function renderPatients(list) {
     const node = document.getElementById("patientsList");

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body
+    style="
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+        'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      align-items: center;
+      background-color: rgb(97, 100, 84);
+    "
+  >
+    <div class="head">
+      <h1 style="color: #fff">Welcome user</h1>
+    </div>
+    <div
+      class="login-box"
+      style="
+        height: 150px;
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+          'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        width: fit-content;
+        background-color: aqua;
+        border: 1px solid black;
+        border-radius: 5px;
+        padding: 10px 20px;
+        gap: 5px;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+      "
+    >
+
+        <label for="username">Enter Your Username :</label>
+        <input
+             type="email"     
+            placeholder="abc@gmail.com"
+            id="username"
+            required
+          />                   <!-- !for hrthik-- type should be email not username -->
+
+      <label for="password">Password :</label>
+      <input type="password" id="password" required />
+
+      <button
+        onclick="logincheck()"
+        style="
+          width: fit-content;
+          padding: 3px 6px;
+          background-color: black;
+          color: white;
+          border-radius: 3px;
+          border: none;
+        "
+      >
+        Login
+      </button>
+    </div>
+    <p id="feedback"></p>
+  </body>
+</html>
+
+<script>
+  async function logincheck() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const feedbackEl = document.getElementById('feedback');
+
+    if (!username || !password) {
+      feedbackEl.textContent = "Fill all the fields";
+      return;
+    }
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+         body: JSON.stringify({ email: username, password }),   // ! for bikram -->we have the field email in the backend so we cannot pass username here so we store it in email and then pass
+      });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (error) {
+        feedbackEl.textContent = "Invalid server response";
+        return;
+      }
+
+      if (!response.ok) {
+        feedbackEl.textContent = data.message || "Login failed";
+        return;
+      }
+
+      feedbackEl.textContent = "Login successful!";
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1000);
+    } catch (error) {
+      feedbackEl.textContent = "An error occurred. Please try again later.";
+    }
+  }
+</script>

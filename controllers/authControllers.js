@@ -13,6 +13,8 @@ import User from "../models/User.js";
 //! if not then create a new user and save it to the database
 //! finally return a response to the frontend
 //!if not then return appropriate error messages
+//what is named export? 
+
 
 export const register=async(req,res)=>{
     try{
@@ -34,7 +36,7 @@ export const register=async(req,res)=>{
        //* now collecting all the data in one place and saving it to database
 
 
-       const newUser=new User({
+       const newUser=new User({ 
         name,
         email,
         password,
@@ -71,9 +73,9 @@ export const register=async(req,res)=>{
 //^                   BEGINNING OF LOGIN CONTROLLER
 
 
-export const login=async(req,res)=>{{
-    try{
-        const{email,password}=req.body;
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
         //basic validation
         if(!email || !password){
@@ -105,15 +107,15 @@ export const login=async(req,res)=>{{
             }
         });
 
-    }catch(err){
-        console.error("Error in login controller:",err);
-        return res.status(500).json({message:"Server error"});
+    } catch (err) {
+        console.error("Error in login controller:", err);
+        return res.status(500).json({ message: "Server error" });
     }
-}};
+};
 
 
 
-//!                   LOGIN CONTROLLER COMPLETED
+//!                   LOGIN CONTROLLER COMPLETED  
 
         
 

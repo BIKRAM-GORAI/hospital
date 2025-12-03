@@ -25,4 +25,4 @@ then put the routes access in server.js
 
 then made index.html
 then login.html
-then register.html
+then register.html  

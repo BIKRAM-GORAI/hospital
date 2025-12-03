@@ -1,133 +1,120 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LOGIN PAGE</title>
-</head>
-<body>
+  </head>
+  <body>
     <div class="loginform">
-        <h2>LOGIN</h2>
+      <h2>LOGIN</h2>
 
+      <label for="email">Username:</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter you email"
+      /><br /><br />
 
-        <label for="email">Username:</label> 
-        <input type="email" id="email"  placeholder="Enter you email" /><br /><br />
-        
+      <label for="password">Password:</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter your passwordd"
+      /><br /><br />
 
+      <button onclick="login()">Login</button>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" placeholder="Enter your passwordd" /><br /><br />
+      <p id="feedback"></p>
+      <!-- !   for server response -->
 
-
-        <button onclick="login()">Login</button>
-
-        <p id="feedback"></p>          <!-- !   for server response -->
-        
-
-        <button onclick="window.location.href=`index.html`">Back to Home</button>
-
-
+      <button onclick="window.location.href=`index.html`">Back to Home</button>
     </div>
-    
-</body>
+  </body>
 </html>
-
 
 <!-- ! DESIGNING PART IS UPTO WHO IS DOING THE FRONTEND -->
 <!-- ^ YOU MAY CHANGE THE HTML PART AND CSS PART FOR THE ABOVE CODE BUT DO NOT CHANGE THE SCRIPT-->
 
-
 <!-- *                      NOW THE SCRIPT (FRUSTRATING ONE)                 -->
 
 <script>
-     async function login(){
-        const email=document.getElementById("email").value.trim(); 
-        const password=document.getElementById("password").value.trim();
-        // these 2 are for taking input of email and password
+  async function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    // these 2 are for taking input of email and password
 
-        //now for showing feedback we will have to get the feesback id
+    //now for showing feedback we will have to get the feesback id
 
-        const feedback=document.getElementById("feedback");//this is for showing the error messages
+    const feedback = document.getElementById("feedback"); //this is for showing the error messages
 
-        //now for simple validation
-        //but we have already covered this logic in the backend so why again this
-        //because frontend can be easily bypasses so we are implementing it in both places
+    //now for simple validation
+    //but we have already covered this logic in the backend so why again this
+    //because frontend can be easily bypasses so we are implementing it in both places
 
-    if(!email || !password)
-    {
-        feedback.textContent="Please fill all the fields";
-        return;
+    if (!email || !password) {
+      feedback.textContent = "Please fill all the fields";
+      return;
     }
 
     // now we will send the data to the server(backend)
 
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // we are telling the backend that we are sending json data
 
-    try{
-        const response=await fetch("/api/auth/login",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            // we are telling the backend that we are sending json data
+        body: JSON.stringify({ email, password }), // this is the data we are sending to the server
+        //converts js objects to json text
+      });
 
-            body:JSON.stringify({email,password})   // this is the data we are sending to the server
-            //converts js objects to json text
+      let data;
+      try {
+        data = await response.json(); // this is the response from the server in json format
+        //it converts json text to js objects
+      } catch (err) {
+        feedback.textContent = "Server error. Please try again later.";
+        return;
+      }
 
-        })
+      if (!response.ok) {
+        feedback.textContent = data.message || "An error occurred during login";
+        return;
+      }
 
-        let data;
-        try{
-            data=await response.json();// this is the response from the server in json format
-            //it converts json text to js objects
-        }
-        catch(err){
-            feedback.textContent="Server error. Please try again later.";
-            return;
-        }
-        
+      //response.ok is false when status is NOT 200–299
+      // -->> (refer to new_points.txt) for status codes references
 
-        if(!response.ok){
-            feedback.textContent=data.message || "An error occurred during login";
-            return;
-        }
+      // Means login failed
+      // Show the backend error message
+      // Stop function execution
 
+      //optional
+      if (!data || !data.user) {
+        feedback.textContent =
+          "no data response from server. Please try again later.";
+        return;
+      }
 
-        //response.ok is false when status is NOT 200–299
-        // -->> (refer to new_points.txt) for status codes references
+      //IF EVERYTHING IS OK WE WILL STORE THE USER DATA IN LOCAL STORAGE
+      localStorage.setItem("hm_user", JSON.stringify(data.user)); //hm_user="hospital management user"
 
-        // Means login failed
-        // Show the backend error message
-        // Stop function execution 
+      //login_details is the key where we are storing the user data
+      //data.user is the user data we are getting from the backend
 
-        //optional
-        if(!data || !data.user){
-            feedback.textContent="no data response from server. Please try again later.";
-            return;
-        }
+      // login successful
+      feedback.textContent = "Login successful!";
+      //shows this message in the feedback paragraph
 
-        
-        //IF EVERYTHING IS OK WE WILL STORE THE USER DATA IN LOCAL STORAGE
-        localStorage.setItem("hm_user",JSON.stringify(data.user));  //hm_user="hospital management user"
-
-        //login_details is the key where we are storing the user data
-        //data.user is the user data we are getting from the backend
-       
-
-
-        // login successful
-        feedback.textContent="Login successful!";
-        //shows this message in the feedback paragraph
-
-
-        setTimeout(()=>{
-            window.location.href="index.html"; // redirect to home page after 2 seconds
-        },2000);
-
-
-        }
-        catch(error){
-            feedback.textContent="Network error or error connecting to server. Please try again later.";
-        }    //error message for network issues
-
-    }
+      setTimeout(() => {
+        window.location.href = "index.html"; // redirect to home page after 2 seconds
+      }, 2000);
+    } catch (error) {
+      feedback.textContent =
+        "Network error or error connecting to server. Please try again later.";
+    } //error message for network issues
+  }
 </script>
