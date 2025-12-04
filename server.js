@@ -29,6 +29,9 @@ app.use(express.static(path.join(__dirname, "public")));
 import authRoutes from "./routes/authRoutes.js";
 app.use("/api/auth",authRoutes);
 
+import adminRoutes from "./routes/adminRoutes.js";
+app.use("/api/admin",adminRoutes);
+
 
 
 // Connect to DB then start server
