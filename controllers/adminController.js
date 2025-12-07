@@ -114,3 +114,72 @@ export const listDoctors=async(req,res)=>{
 // “Roll No 456”
 
 //* lean(): This method is used to improve performance by returning plain JavaScript objects instead of Mongoose documents. This is useful when you don't need the full functionality of Mongoose documents.  
+
+
+
+//! NOW WE WILL HEAD ON TO THE DELETION OF DOCTOR FROM THE DATABASE
+//^REMEMBER THAT WE HAVE TO DELETE 2 COLLECTION ONE FROM THE DOCTOR AND ONE FROM THE USER COLLECTION
+
+
+//*lets start with the doctor deletion
+//see it is pretty simple
+//here are the steps
+//first we will find the doctor by id
+//then if any dta that is the user collection of the doctor is present in the user collection we will delete that also
+//finally we will delete the doctor from the doctor collection
+
+//^this function would be called by api/admin/doctors/:id route with DELETE method
+export const deleteDoctor=async(req,res)=>{
+    try{
+        const{id}=req.params; //getting doctor id from the request parameters
+
+        //finding the doctor by id
+        const doctor=await Doctor.findById(id);
+        if(!doctor){
+            return res.status(404).json({message:"Doctor not found"});
+        }
+        if(doctor.user){
+            //deleting the user associated with the doctor
+            await User.findByIdAndDelete(doctor.user);
+        }
+        await Doctor.findByIdAndDelete(id); //deleting the doctor
+
+        return res.json({message:"Doctor deleted successfully"});
+    }catch(error){
+        console.error("Error in deleteDoctor controller:",error);
+        return res.status(500).json({message:"Server error"});
+    }
+};
+
+
+//*IMPORTANT SYNTAX
+//The findByIdAndDelete method in Mongoose is used to delete a single document by its ID and returns the deleted document.
+//It is a shorthand for findOneAndDelete({ _id: id })
+
+
+
+//! NOW WE WILL HEAD ON TO THE BLACKLISTING OF DOCTOR
+//^LOGIC IS PRETTY SIMPLE
+//we will find the doctor by id
+//then we will toggle the blacklisted field of the doctor
+//finally we will save the doctor
+
+export const setDoctorBlacklist=async(req,res)=>{{
+    try{
+        const{id}=req.params; //getting doctor id from the request parameters
+
+        const doctor=await Doctor.findById(id);
+        if(!doctor){
+            return res.status(404).json({message:"Doctor not found"});
+        }
+        doctor.blacklisted = doctor.blacklisted===true ? false : true; //toggling the blacklisted field
+
+        await doctor.save(); //saving the doctor
+
+        return res.json({message:"Doctor blacklist status toggled successfully", blacklisted:doctor.blacklisted});//what shall it return?//it shall return the new blacklisted status example true or false
+        
+    }catch(error){
+        console.error("Error in toggleBlacklistDoctor controller:",error);
+        return res.status(500).json({message:"Server error"});
+    }
+}};

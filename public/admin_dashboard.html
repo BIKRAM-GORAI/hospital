@@ -10,7 +10,7 @@
     <div>
       <input id="searchInput" placeholder="search..." />
       <button id="searchBtn">Search</button>
-      <a href="addDoctor.html"><button id="gotoAdd" >Add doctor</button></a>
+      <a href="addDoctor.html"><button id="gotoAdd">Add doctor</button></a>
     </div>
 
     <h2>Registered Doctors</h2>
@@ -18,6 +18,17 @@
     <div id="doctorsList">Loading...</div>
 
     <script>
+      // ---------- Renderer helper functions ----------
+      function escapeHtml(str) {//function to escape html special characters to prevent xss attacks
+        if (str === null || str === undefined) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
       // minimal sample renderer (keeps things simple)
       var doctors = []; // will be replaced by server data
       //empty array to hold doctors data fetched from server
@@ -38,13 +49,50 @@
 
         doctors.forEach(function (d) {
           //for each doctor in the doctors array  //loops through the doctors objects
-          var div = document.createElement("div"); //creating a div element to hold the doctor info of each doctor
-          div.textContent =
-            (d.name || "Unknown") + " — " + (d.department || ""); //setting the text content of the div to show doctor's name and department
-          //for example: Dr. Smith — Cardiology
-          node.appendChild(div); //appending the div to the doctorsList div in the HTML
+          var row = document.createElement("div"); //creates a div element for each doctor
+          row.className = "row"; // assigns class name 'row' to the div
+
+          // show blacklist state visually
+          var bl = d.blacklisted ? " (blacklisted)" : "";
+
+          row.innerHTML =
+            '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+            "<div><strong>" +
+            escapeHtml(d.name) +
+            '</strong><div style="color:#666;font-size:13px;">' +
+            escapeHtml(d.department) +
+            bl +
+            "</div></div>" +
+            "<div>" +
+            '<button data-id="' +
+            d._id +
+            '" class="editBtn">edit</button> ' +
+            '<button data-id="' +
+            d._id +
+            '" class="delBtn">delete</button> ' +
+            '<button data-id="' +
+            d._id +
+            '" class="blackBtn">' +
+            (d.blacklisted ? "unblacklist" : "blacklist") +
+            "</button>" +
+            "</div>" +
+            "</div>";
+
+          node.appendChild(row); // appends the created row to the doctorsList div
+
+          //BEFORE ADDING EDIT, DELETE, BLACKLIST FUNCTIONALITY
+          // var div = document.createElement("div"); //creating a div element to hold the doctor info of each doctor
+          // div.textContent =
+          //   (d.name || "Unknown") + " — " + (d.department || ""); //setting the text content of the div to show doctor's name and department
+          // //for example: Dr. Smith — Cardiology
+          // node.appendChild(div); //appending the div to the doctorsList div in the HTML
         });
       }
+
+      //IMPORTANT TIP
+      //escapeHtml() → protects against XSS attacks
+      //this function converts special characters to HTML entities
+      //WITHOUT THIS, A MALICIOUS USER COULD INJECT SCRIPTS INTO THE PAGE
 
       // ---------- Load live doctors from backend  ----------
       async function loadDoctorsFromServer() {
@@ -67,7 +115,7 @@
               "x-admin-secret": "bikram776", // dev-only: replace with ADMIN_SECRET
             },
           });
-          
+
           //ONE THING TO REMEMBER HERE THAT WE ARE USING THE SAME API CALL TO FETCH DOCTORS AND THE SAME FOR CREATING DOCTORS. SO MAKE SURE YOUR BACKEND HANDLES GET AND POST REQUESTS SEPARATELY.
 
           if (!res.ok) {
@@ -94,15 +142,16 @@
             return;
           }
 
-          doctors = body.doctors.map((d) => ({//what is d here?// d represents each doctor object from the server response
+          doctors = body.doctors.map((d) => ({
+            //what is d here?// d represents each doctor object from the server response
 
             //converts raw api data into frontend friendly format
             _id: d._id || String(Date.now()), //unique id for each doctor
-            name:  d.user.name || "Unknown", //doctor's name//why d.user and d.name both?//beacause name can be in user object or directly in doctor object
+            name: d.name || d.user.name || "Unknown", //doctor's name//why d.user and d.name both?//beacause name can be in user object or directly in doctor object
             //reads name from populated user
             department: d.department || "", // doctor's department
             experience: d.experience || 0, //doctor's experience
-            phone:  d.user.phone || "", // doctor's phone number
+            phone: d.user.phone || "", // doctor's phone number
           })); //ends map conversion
 
           //REFER TO ADMINCONTROLLER FOR CHECKING THE RESPONSE STRUCTURE
@@ -118,7 +167,76 @@
       // Call it once on load
       loadDoctorsFromServer();
 
-     
+      // // ---------- Doctor actions (delete, blacklist) ----------
+
+      // async function deleteDoctorRequest(id) {
+      //   const msg = document.getElementById("mini_msg");
+      //   msg.textContent = "Deleting...";
+
+      //   try {
+      //     const res = await fetch(
+      //       "/api/admin/doctors/" + encodeURIComponent(id),
+      //       {
+      //         //+id appends the doctor id to the url
+      //         method: "DELETE",
+      //         headers: {
+      //           "Content-Type": "application/json",
+      //           "x-admin-secret": "bikram776",
+      //         },
+      //       }
+      //     );
+
+      //     const body = await res.json().catch(() => ({})); //if json parsing fails, return empty object
+
+      //     //await res.json()=>converts json response to js object
+      //     if (!res.ok) {
+      //       msg.textContent = body.message || "Delete failed";
+      //       return;
+      //     }
+
+      //     msg.textContent = "Deleted.";
+      //     await loadDoctorsFromServer(); //reload the doctors list after deletion
+      //   } catch (err) {
+      //     console.error(err);
+      //     msg.textContent = "Network error deleting doctor";
+      //   }
+      // }
+
+      // async function toggleBlacklistRequest(id) {
+      //   const msg = document.getElementById("mini_msg");
+      //   msg.textContent = "Updating...";
+
+      //   try {
+      //     const res = await fetch(
+      //       "/api/admin/doctors/" + encodeURIComponent(id) + "/blacklist",
+      //       {
+      //         method: "PATCH",
+      //         headers: {
+      //           "Content-Type": "application/json",
+      //           "x-admin-secret": "bikram776",
+      //         },
+
+      //         body: JSON.stringify({}),
+      //       }
+      //     );
+
+      //     const body = await res.json().catch(() => ({})); //if json parsing fails, return empty object
+      //     //await res.json()=>converts json response to js object
+
+      //     if (!res.ok) {
+      //       msg.textContent = body.message || "Update failed";
+      //       return; //exits the function if update fails
+      //     }
+
+      //     msg.textContent = "Updated."; //shows success message
+
+      //     await loadDoctorsFromServer(); //reload the doctors list after updating blacklist status
+      //   } catch (err) {
+      //     console.error(err);
+      //     msg.textContent = "Network error";
+      //   }
+      // }
+      //loadDoctorsFromServer();
     </script>
   </body>
 </html>
