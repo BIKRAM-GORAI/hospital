@@ -47,7 +47,7 @@ export const createDoctor=async(req,res)=>{
             department,
             experience:Number(experience) || 0,//changing to number
 
-            //name, //duplicated in user schema//ignored
+            name, //duplicated in user schema//justf for understanding we are keeping it here
             //email, //duplicated in user schema//ignored
             //phone,//duplicated in user schema//ignored
         });
@@ -89,7 +89,7 @@ export const listDoctors=async(req,res)=>{
 // [
 //   {
 //     "_id": "123",
-//     "specialization": "Cardiologist",
+//     "department": "Cardiologist",
 //     "experience": 5,
 //     "user": {
 //       "name": "Dr. Arjun",

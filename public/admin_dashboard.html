@@ -1,296 +1,124 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin Dashboard</title>
-</head>
-<body>
-  <div class="page">
-    <h1 class="title">Admin Dashboard</h1>
-
-    <div class="topbar">
-      <div class="welcome">Welcome, Admin</div>
-      <div class="search-row">
-        <input id="searchInput" placeholder="doctor, patient, department..." />
-        <button id="searchBtn">Search</button>
-        <button id="createViewBtn" class="green">create</button>
-      </div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard</title>
+  </head>
+  <body>
+    <h1>Welcome, Admin</h1>
+    <div>
+      <input id="searchInput" placeholder="search..." />
+      <button id="searchBtn">Search</button>
+      <a href="addDoctor.html"><button id="gotoAdd" >Add doctor</button></a>
     </div>
 
-    <div class="grid">
-      <!-- Left column: lists -->
-      <div class="col">
-        <section class="card">            
-           <!-- why only section? because it is a part of a document and it is used to group related content -->
-          <h2 class="card-title">Registered Doctors</h2>
-          <div id="doctorsList" class="list">
-            <!-- doctor rows inserted here -->
-          </div>
-        </section>
+    <h2>Registered Doctors</h2>
+    <div id="mini_msg" style="color: #666; margin-bottom: 8px"></div>
+    <div id="doctorsList">Loading...</div>
 
-        <section class="card">
-          <h2 class="card-title">Registered Patients</h2>
-          <div id="patientsList" class="list">
-            <!-- patient rows -->
-          </div>
-        </section>
+    <script>
+      // minimal sample renderer (keeps things simple)
+      var doctors = []; // will be replaced by server data
+      //empty array to hold doctors data fetched from server
 
-        <section class="card">
-          <h2 class="card-title">Upcoming Appointments</h2>
-          <table class="appt-table">
-            <thead><tr><th>Sr No.</th><th>Patient</th><th>Doctor</th><th>Department</th><th>Action</th></tr></thead>
-            <tbody id="appointmentsList">
-              <!-- rows -->
-            </tbody>
-          </table>
-        </section>
-      </div>
+      function renderDoctors() {
+        //a function to render the list of doctors on the page
 
-      <!-- Right column: add doctor + patient history -->
-      <div class="col">
-        <section class="card">
-          <h2 class="card-title">Add a new Doctor</h2>
-          <div class="form">
-            <label>Fullname</label>
-            <input id="d_fullname" placeholder="Dr. Abcde" />
-            <label>Specialization / Department</label>
-            <input id="d_spec" placeholder="Cardiology" />
-            <label>Experience (years)</label>
-            <input id="d_exp" placeholder="10" />
-            <div class="row-right">
-              <button id="createDoctorBtn" class="green">create</button>
-            </div>
-            <div id="createMsg" class="muted"></div>
-          </div>
-        </section>
+        var node = document.getElementById("doctorsList"); //doctorList is the div where we want to show the list of doctors
+        //why we use var instead of const or let: to support older browsers
 
-        <section class="card" id="patientHistoryCard" style="display:none;">
-          <div class="history-header">
-            <h2>Patient History</h2>
-            <button id="closeHistory">back</button>
-          </div>
-          <div id="patientHistoryContent" class="history-content">
-            <!-- history table -->
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
+        node.innerHTML = ""; //clearing previous content or else Loading... will remain there
 
-<script>
-  // ---------- Sample data to show layout (replace with real API data later) ----------
-  const sampleDoctors = [
-    { _id: "d1", name: "Dr. abcde", email: "doc1@h.com", phone: "9876543210", department: "Cardiology" },
-    { _id: "d2", name: "Dr. Pqrst", email: "doc2@h.com", phone: "9123456780", department: "Oncology" }
-  ];
-  const samplePatients = [
-    { _id: "p1", name: "Mr. abcde", phone: "9988776655" },
-    { _id: "p2", name: "Miss. Pqrst", phone: "9870012345" }
-  ];
-  const sampleAppts = [
-    { id: "1001", patient: "Mr. abcde", doctor: "Dr. pqrst", dept: "Cardiology" },
-    { id: "1002", patient: "Miss. Pqrst", doctor: "Dr. abcde", dept: "General" }
-  ];
+        if (!doctors || doctors.length === 0) {
+          //if no doctors are present or doctors array is empty
+          node.textContent = "No doctors yet.";
+          return; // Shows a message and stops the function if no doctors exist.
+        }
 
-  // ---------- render lists ----------
-  // function renderDoctors(list) {
-  //   const node = document.getElementById("doctorsList");
-  //   node.innerHTML = "";
-  //   list.forEach(d => {
-  //     const row = document.createElement("div");
-  //     row.className = "rowItem";
-  //     row.innerHTML = `
-  //       <div class="rowLeft">
-  //         <div class="name">${escape(d.name)}</div>
-  //         <div class="meta">${escape(d.department)} • ${escape(d.phone)}</div>
-  //       </div>
-  //       <div class="rowActions">
-  //         <button class="yellow editBtn" data-id="${d._id}">edit</button>
-  //         <button class="red deleteBtn" data-id="${d._id}">delete</button>
-  //         <button class="gray">blacklist</button>
-  //       </div>
-  //     `;
-  //     node.appendChild(row);
-  //   });
-  //   attachDoctorHandlers();
-  //}
-  function renderDoctors(list) {
-  const doctorsList = document.getElementById("doctorsList");
+        doctors.forEach(function (d) {
+          //for each doctor in the doctors array  //loops through the doctors objects
+          var div = document.createElement("div"); //creating a div element to hold the doctor info of each doctor
+          div.textContent =
+            (d.name || "Unknown") + " — " + (d.department || ""); //setting the text content of the div to show doctor's name and department
+          //for example: Dr. Smith — Cardiology
+          node.appendChild(div); //appending the div to the doctorsList div in the HTML
+        });
+      }
 
-  // Clear old data
-  doctorsList.innerHTML = "";
+      // ---------- Load live doctors from backend  ----------
+      async function loadDoctorsFromServer() {
+        //function to load doctors from server
+        const msgNode =
+          document.getElementById("mini_msg") ||
+          document.getElementById("mini_msg_fallback"); //node to show messages to the user
 
-  // Loop through each doctor
-  list.forEach(function (doctor) {
+        if (msgNode) {
+          //what does this do? //checking if msgNode exists  //if it exists, we set its text content to show loading message
+          msgNode.textContent = "Loading doctors...";
+        } //show loading message
 
-    // Create a new div for each doctor row
-    const row = document.createElement("div");
-    row.className = "rowItem"; //assigning class named rowItem
+        try {
+          const res = await fetch("/api/admin/doctors", {
+            //making GET request to fetch doctors
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json", //we are expecting json response from server
+              "x-admin-secret": "bikram776", // dev-only: replace with ADMIN_SECRET
+            },
+          });
+          
+          //ONE THING TO REMEMBER HERE THAT WE ARE USING THE SAME API CALL TO FETCH DOCTORS AND THE SAME FOR CREATING DOCTORS. SO MAKE SURE YOUR BACKEND HANDLES GET AND POST REQUESTS SEPARATELY.
 
-    // Add HTML inside the row
-    row.innerHTML =
-      '<div class="rowLeft">' +
-        '<div class="name">' + doctor.name + '</div>' +
-        '<div class="meta">' + doctor.department + ' • ' + doctor.phone + '</div>' +
-      '</div>' +
+          if (!res.ok) {
+            let msg; //variable to hold error message
 
-      '<div class="rowActions">' +
-        '<button class="yellow editBtn" data-id="' + doctor._id + '">edit</button>' +
-        '<button class="red deleteBtn" data-id="' + doctor._id + '">delete</button>' +
-        '<button class="gray">blacklist</button>' +
-      '</div>';
+            try {
+              msg = (await res.json()).message; //try to extract error message from server response
+            } catch {}
 
-    // Add the row to the page
-    doctorsList.appendChild(row);
-  });
+            if (msgNode)
+              msgNode.textContent = msg
+                ? "Error: " + msg
+                : "Failed to load doctors: " + res.status;
 
-  // Attach event listeners to buttons
-  attachDoctorHandlers();
-}
+            return;
+          }
 
+          const body = await res.json(); //converts json to js object
+          if (!body || !Array.isArray(body.doctors)) {
+            //checking if body is valid and contains doctors array
+            if (msgNode) {
+              msgNode.textContent = "Unexpected server response";
+            }
+            return;
+          }
 
-  function renderPatients(list) {
-    const node = document.getElementById("patientsList");
-    node.innerHTML = "";
-    list.forEach(p => {
-      const row = document.createElement("div");
-      row.className = "rowItem";
-      row.innerHTML = `
-        <div class="rowLeft">
-          <div class="name">${escape(p.name)}</div>
-          <div class="meta">${escape(p.phone)}</div>
-        </div>
-        <div class="rowActions">
-          <button class="yellow">edit</button>
-          <button class="red">delete</button>
-          <button class="gray">blacklist</button>
-        </div>
-      `;
-      node.appendChild(row);
-    });
-  }
+          doctors = body.doctors.map((d) => ({//what is d here?// d represents each doctor object from the server response
 
-  function renderAppointments(list) {
-    const tbody = document.getElementById("appointmentsList");
-    tbody.innerHTML = "";
-    list.forEach((a, i) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${i+1}</td><td>${escape(a.patient)}</td><td>${escape(a.doctor)}</td><td>${escape(a.dept)}</td>
-        <td><button class="viewHistoryBtn" data-patient="${escape(a.patient)}">view</button></td>`;
-      tbody.appendChild(tr);
-    });
-    document.querySelectorAll(".viewHistoryBtn").forEach(b=>{
-      b.addEventListener("click", ()=> showPatientHistory(b.dataset.patient));
-    });
-  }
+            //converts raw api data into frontend friendly format
+            _id: d._id || String(Date.now()), //unique id for each doctor
+            name:  d.user.name || "Unknown", //doctor's name//why d.user and d.name both?//beacause name can be in user object or directly in doctor object
+            //reads name from populated user
+            department: d.department || "", // doctor's department
+            experience: d.experience || 0, //doctor's experience
+            phone:  d.user.phone || "", // doctor's phone number
+          })); //ends map conversion
 
-  // escape for safety when inserting text
-  function escape(s='') { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+          //REFER TO ADMINCONTROLLER FOR CHECKING THE RESPONSE STRUCTURE
 
-  // attach handlers to doctor edit/delete (demo only, no backend)
-  function attachDoctorHandlers(){
-    document.querySelectorAll(".deleteBtn").forEach(b=>{
-      b.onclick = function(){
-        if(!confirm("Delete doctor?")) return;
-        const id = this.dataset.id;
-        // remove from sample array (demo)
-        const idx = sampleDoctors.findIndex(x => x._id === id);
-        if(idx >= 0) { sampleDoctors.splice(idx,1); renderDoctors(sampleDoctors); }
-      };
-    });
-    document.querySelectorAll(".editBtn").forEach(b=>{
-      b.onclick = function(){
-        alert("Edit function not implemented in demo. Use admin API later.");
-      };
-    });
-  }
+          if (msgNode) msgNode.textContent = ""; //clears any previous messages
+          if (typeof renderDoctors === "function") renderDoctors(); //calls renderDoctors to update the UI
+        } catch (err) {
+          console.error("Failed to load doctors:", err);
+          if (msgNode) msgNode.textContent = "Network error loading doctors"; //shows network error message
+        }
+      }
 
-  // ---------- create doctor (UI only) ----------
-  document.getElementById("createDoctorBtn").addEventListener("click", function(){
-    const name = document.getElementById("d_fullname").value.trim();
-    const spec = document.getElementById("d_spec").value.trim();
-    const exp = document.getElementById("d_exp").value.trim();
-    const msg = document.getElementById("createMsg");
-    if(!name){ msg.textContent = "Name required"; return; }
-    // demo: add to sampleDoctors
-    const newDoc = { _id: "d"+(Date.now()), name: name, phone: "", department: spec || ("Exp: "+exp) };
-    sampleDoctors.push(newDoc);
-    renderDoctors(sampleDoctors);
-    msg.textContent = "Created (demo) — connect API to persist";
-    // clear form
-    document.getElementById("d_fullname").value = "";
-    document.getElementById("d_spec").value = "";
-    document.getElementById("d_exp").value = "";
-  });
+      // Call it once on load
+      loadDoctorsFromServer();
 
-  // ---------- Patient history UI ----------
-  function showPatientHistory(patientName) {
-    document.getElementById("patientHistoryCard").style.display = "block";
-    const box = document.getElementById("patientHistoryContent");
-    // sample static rows — replace with real data later
-    box.innerHTML = `
-      <div><strong>Patient Name:</strong> ${escape(patientName)}</div>
-      <div class="history-table">
-        <div class="hdr"><span>No.</span><span>Visit Type</span><span>Tests Done</span><span>Diagnosis</span><span>Prescription</span></div>
-        <div class="row"><span>1.</span><span>In-person</span><span>ECG</span><span>Abnormal</span><span>Medicine 1</span></div>
-        <div class="row"><span>2.</span><span>In-person</span><span>ECG</span><span>Abnormal</span><span>Medicine 2</span></div>
-        <div class="row"><span>3.</span><span>In-person</span><span>ECG</span><span>Normal</span><span>Medicine 3</span></div>
-      </div>
-    `;
-  }
-  document.getElementById("closeHistory").addEventListener("click", function(){
-    document.getElementById("patientHistoryCard").style.display = "none";
-  });
-
-  // ---------- initial render ----------
-  renderDoctors(sampleDoctors);
-  renderPatients(samplePatients);
-  renderAppointments(sampleAppts);
-</script>
-
-<!-- CSS (bottom) -->
-<style>
-  :root { --muted:#666; --accent:#1e88e5; --green:#16a34a; --red:#e53935; --yellow:#f59e0b; --gray:#9aa0a6; }
-  body { font-family: Inter, system-ui, Arial; margin: 18px; color:#222; background:#f7f7f8; }
-  .page { max-width:1100px; margin:0 auto; }
-  .title { text-align:center; margin-bottom:8px; font-weight:600; }
-  .topbar { display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px 12px; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,0.03); margin-bottom:14px; }
-  .search-row { display:flex; gap:8px; align-items:center; }
-  .search-row input { padding:8px; border-radius:6px; border:1px solid #ddd; min-width:260px; }
-  .search-row button { padding:8px 10px; border-radius:6px; border:none; cursor:pointer; background:var(--accent); color:#fff; }
-  .createViewBtn { background:var(--green); }
-
-  .grid { display:flex; gap:14px; align-items:flex-start; }
-  .col { flex:1; }
-
-  .card { background:#fff; padding:14px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.04); margin-bottom:12px; }
-  .card-title { margin:0 0 8px 0; font-size:16px; }
-
-  .list { display:flex; flex-direction:column; gap:10px; }
-  .rowItem { display:flex; justify-content:space-between; align-items:center; padding:8px; border-radius:6px; border:1px solid #eee; background:#fafafa; }
-  .rowLeft .name { font-weight:600; }
-  .rowLeft .meta { color:var(--muted); font-size:13px; }
-  .rowActions { display:flex; gap:6px; }
-
-  button { cursor:pointer; }
-  .green { background:var(--green); color:#fff; border:none; padding:8px 10px; border-radius:6px; }
-  .red { background:var(--red); color:#fff; border:none; padding:6px 8px; border-radius:6px; }
-  .yellow { background:var(--yellow); color:#fff; border:none; padding:6px 8px; border-radius:6px; }
-  .gray { background:#e6e9eb; color:#333; border:none; padding:6px 8px; border-radius:6px; }
-
-  .form label { display:block; margin-top:6px; font-size:13px; color:var(--muted); }
-  .form input { width:100%; padding:8px; margin-top:6px; border-radius:6px; border:1px solid #eee; box-sizing:border-box; }
-
-  .row-right { display:flex; justify-content:flex-end; margin-top:8px; }
-  .muted { color:var(--muted); font-size:13px; margin-top:8px; }
-
-  .appt-table { width:100%; border-collapse:collapse; }
-  .appt-table th, .appt-table td { text-align:left; padding:8px; border-bottom:1px solid #f0f0f0; font-size:13px; }
-
-  .history-header { display:flex; justify-content:space-between; align-items:center; }
-  .history-content { margin-top:8px; }
-  .history-table { border:1px solid #eee; padding:8px; border-radius:6px; background:#fff; margin-top:8px; }
-  .history-table .hdr { display:grid; grid-template-columns:40px 1fr 1fr 1fr 1fr; font-weight:600; padding:6px 0; }
-  .history-table .row { display:grid; grid-template-columns:40px 1fr 1fr 1fr 1fr; padding:6px 0; border-top:1px dashed #f2f2f2; }
-</style>
+     
+    </script>
+  </body>
+</html>

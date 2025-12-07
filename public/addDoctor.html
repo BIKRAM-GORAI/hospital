@@ -94,6 +94,7 @@
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                "x-admin-secret": "bikram776", // dev-only: replace with ADMIN_SECRET
               },
               body: JSON.stringify({ name, department:dept, experience:exp, email, phone }),
             });
@@ -115,8 +116,8 @@
           setTimeout(() => {
             feedback.textContent =
               "Doctor added successfully! Redirecting to dashboard...";
-            window.location.href = "/adminDashboard.html";
-          }, 2000);
+            window.location.href = "/admin_dashboard.html";
+          }, 3000);
         }
         catch (error) {
           feedback.textContent = "Network error. Please try again later.";
